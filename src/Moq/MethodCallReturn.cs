@@ -171,15 +171,19 @@ namespace Moq
 		{
 			var callbackMethod = callback.GetMethodInfo();
 
+			var expectedParams = this.Method.GetParameters();
+			var actualParams = callback.GetMethodInfo().GetParameters();
+			if (callback.HasCompatibleParameterList(expectedParams))
+			{
+				return;
+			}
+
 			// validate number of parameters:
 
 			var numberOfActualParameters = callbackMethod.GetParameters().Length;
-			if (callbackMethod.IsStatic)
+			if (callbackMethod.IsExtensionMethod())
 			{
-				if (callbackMethod.IsExtensionMethod() || callback.Target != null)
-				{
-					numberOfActualParameters--;
-				}
+				numberOfActualParameters--;
 			}
 
 			if (numberOfActualParameters > 0)
